@@ -2,42 +2,27 @@ import React, { Component } from "react";
 import { graphql } from "gatsby";
 import Img from "gatsby-image";
 import moment from "moment";
-import { DiscussionEmbed } from "disqus-react";
 
 import Layout from "../components/layout";
 import SEO from "../components/seo";
 import Share from "../components/share";
 
-export default class blogPost extends Component {
+export default class BlogPost extends Component {
   render() {
-    const data = this.props.data.contentfulBlogs;
-    const disqusShortname = "RohitGupta";
-    const disqusConfig = {
-      identifier: data.id,
-      title: data.title
-    };
-
-    const siteurl = this.props.data.contentfulSiteInformation.siteUrl + "/";
-    const twitterhandle = this.props.data.contentfulSiteInformation
-      .twitterHandle;
-    const socialConfigss = {
-      site: {
-        siteMetadata: { siteurl, twitterhandle }
-      },
+    const { contentfulBlogs: data, contentfulSiteInformation } = this.props.data;
+    const siteurl = contentfulSiteInformation.siteUrl + "/";
+    const twitterhandle = contentfulSiteInformation.twitterHandle;
+    const socialConfig = {
+      url: `${siteurl}${data.slug}`,
       title: data.title,
-      slug: data.slug
+      twitterhandle,
     };
 
     return (
       <Layout>
         <SEO
           title={data.title}
-          keywords={[
-            `Rohit Gupta`,
-            `Frontend Developer`,
-            `Developer`,
-            `${data.title}`
-          ]}
+          keywords={["Rohit Gupta", "Frontend Developer", "Developer", data.title]}
         />
         <div className="site-container blog-post">
           <div className="container">
@@ -55,28 +40,27 @@ export default class blogPost extends Component {
             <div className="details">
               <h1 className="title">{data.title}</h1>
               <span className="date">
-                <i className="fas fa-calendar-alt"></i>{" "}
-                {moment(data.createdAt).format("LL")}
+                <i className="fas fa-calendar-alt"></i> {moment(data.createdAt).format("LL")}
               </span>
               <div
                 dangerouslySetInnerHTML={{
-                  __html: data.description.childMarkdownRemark.html
+                  __html: data.description?.childMarkdownRemark?.html || "<p>Description unavailable.</p>",
                 }}
               />
             </div>
-            <Share
-              socialConfig={{
-                ...socialConfigss.site.siteMetadata.twitterhandletitle,
-                config: {
-                  url: `${siteurl}${socialConfigss.slug}`,
-                  title: `${socialConfigss.title}`
-                }
-              }}
-            />
-            <DiscussionEmbed
-              shortname={disqusShortname}
-              config={disqusConfig}
-            />
+            <Share socialConfig={socialConfig} />
+
+            {/* Utterances Comment Section */}
+            <div className="comments">
+              <script
+                src="https://utteranc.es/client.js"
+                repo="your-github-username/your-repo"
+                issue-term="title"
+                theme="github-light"
+                crossOrigin="anonymous"
+                async
+              ></script>
+            </div>
           </div>
         </div>
       </Layout>
