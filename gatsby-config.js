@@ -1,5 +1,5 @@
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, ".env.development") });
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV || "development"}` });
 
 console.log("CONTENTFUL_SPACE_ID:", process.env.CONTENTFUL_SPACE_ID);
 console.log("CONTENTFUL_ACCESS_TOKEN:", process.env.CONTENTFUL_ACCESS_TOKEN);
