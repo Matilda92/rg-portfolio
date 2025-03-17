@@ -3,22 +3,26 @@ import PropTypes from "prop-types";
 import Helmet from "react-helmet";
 import { StaticQuery, graphql } from "gatsby";
 
-function SEO({ description, lang, meta, keywords, title, data }) {
+function SEO({ description, lang, meta, keywords, title }) {
   return (
     <StaticQuery
       query={detailsQuery}
       render={data => {
+        const siteName = data.contentfulSiteInformation.siteName;
+        const siteDescription =
+          data.contentfulSiteInformation.siteDescription?.siteDescription || "";
+
         return (
           <Helmet
             htmlAttributes={{
               lang
             }}
             title={title}
-            titleTemplate={`%s | ${data.contentfulSiteInformation.siteName}`}
+            titleTemplate={`%s | ${siteName}`}
             meta={[
               {
                 name: `description`,
-                content: data.contentfulSiteInformation.siteDescription
+                content: description || siteDescription
               },
               {
                 property: `og:title`,
@@ -26,7 +30,7 @@ function SEO({ description, lang, meta, keywords, title, data }) {
               },
               {
                 property: `og:description`,
-                content: data.contentfulSiteInformation.siteDescription
+                content: description || siteDescription
               },
               {
                 property: `og:type`,
@@ -37,16 +41,12 @@ function SEO({ description, lang, meta, keywords, title, data }) {
                 content: `summary`
               },
               {
-                name: `twitter:creator`,
-                content: data.contentfulSiteInformation.twitterHandle
-              },
-              {
                 name: `twitter:title`,
                 content: title
               },
               {
                 name: `twitter:description`,
-                content: data.contentfulSiteInformation.siteDescription
+                content: description || siteDescription
               }
             ]
               .concat(
@@ -68,7 +68,8 @@ function SEO({ description, lang, meta, keywords, title, data }) {
 SEO.defaultProps = {
   lang: `en`,
   meta: [],
-  keywords: []
+  keywords: [],
+  description: ""
 };
 
 SEO.propTypes = {
@@ -85,8 +86,9 @@ const detailsQuery = graphql`
   query DefaultSEOQuery {
     contentfulSiteInformation {
       siteName
-      siteDescription
-      twitterHandle
+      siteDescription {
+        siteDescription
+      }
     }
   }
 `;
