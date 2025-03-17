@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { StaticQuery, graphql } from "gatsby";
 import "bootstrap/dist/css/bootstrap.css";
@@ -9,45 +9,53 @@ import Footer from "./footer";
 import "../css/style.css";
 import "../css/font-awesome.css";
 
-if (typeof window !== "undefined") {
-  require("smooth-scroll")('a[href*="#"]');
-}
+const Layout = ({ children, header }) => {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      require("smooth-scroll")('a[href*="#"]');
+    }
+  }, []);
 
-const Layout = ({ children, header }) => (
-  <StaticQuery
-    query={graphql`
-      query SiteTitleQuery {
-        contentfulSiteInformation {
-          siteName
-          siteDescription
-          logo {
-            file {
-              url
+  return (
+    <StaticQuery
+      query={graphql`
+        query SiteTitleQuery {
+          contentfulSiteInformation {
+            siteName
+            siteDescription {
+              siteDescription
+            }
+            logo {
+              file {
+                url
+              }
             }
           }
-          menus
         }
-      }
-    `}
-    
-    render={data => (
-      <>
-        <Header
-          data={data.contentfulSiteInformation}
-          siteTitle={data.contentfulSiteInformation.siteName}
-          header={header}
-        />
-        <div>
-          <main id="home">{children}</main>
-        </div>
-        <Footer siteName={data.contentfulSiteInformation.siteName} />
-      </>
-    )}
-  />
-);
+      `}
+      render={data => {
+        const { siteName, siteDescription, logo } = data.contentfulSiteInformation;
+        return (
+          <>
+            <Header
+              data={data.contentfulSiteInformation}
+              siteTitle={siteName}
+              header={header}
+            />
+            <div>
+              <main id="home">{children}</main>
+            </div>
+            <Footer siteName={siteName} />
+          </>
+        );
+      }}
+    />
+  );
+};
 
 Layout.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  header: PropTypes.string
 };
 
 export default Layout;
